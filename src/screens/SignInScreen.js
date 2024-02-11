@@ -73,8 +73,8 @@ function SignInScreen({navigation}) {
       </View>      
       {/* Phone Sign In Button */}
       <TouchableOpacity style={styles.wideButton} onPress={() => navigation.navigate('PhoneSignIn')}>
-        <FontAwesome name="phone" style={styles.iconStyle} />
-        <Text style={styles.wideButtonText}>Sign in with phone OTP</Text>
+        <FontAwesome name="mobile" style={styles.iconStyle} />
+        <Text style={styles.wideButtonText}>Sign in with phone number</Text>
       </TouchableOpacity>
 
       {/* Placeholder for Apple Sign In Button */}

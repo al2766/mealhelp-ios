@@ -4,6 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 
 
+
 function PhoneSignInScreen({navigation}) {
   const [phoneNumber, setPhoneNumber] = useState('07957196486');
   const [error, setError] = useState('');
