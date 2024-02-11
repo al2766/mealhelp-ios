@@ -4,10 +4,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import {AuthContext} from '../context/AuthContext';
 import SignInScreen from '../screens/SignInScreen';
+import PhoneSignInScreen from '../screens/PhoneSignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
+import ForgotPassword from '../screens/ForgotPasswordScreen';
 import TabNavigator from './TabNavigator';
 
-// ... your AppNavigator implementation
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +32,9 @@ export default function AppNavigator() {
           <>
             <Stack.Screen name="SignIn" component={SignInScreen} />
             <Stack.Screen name="SignUp" component={SignUpScreen} />
+            <Stack.Screen name="PhoneSignIn" component={PhoneSignInScreen} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+
           </>
         ) : (
           // User is signed in

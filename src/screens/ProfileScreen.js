@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 
-function ProfileScreen(navigation) {
+function ProfileScreen() {
   const { signOut, user } = useContext(AuthContext);
 
   return (
@@ -11,23 +11,12 @@ function ProfileScreen(navigation) {
         style={styles.avatar}
         source={{ uri: user ? user.photoURL : 'https://via.placeholder.com/150' }} // Replace with user's avatar image if available
       />
-      <Text style={styles.name}>{user ? user.displayName : 'User Name'}</Text>
+      <Text style={styles.name}>{user ? user.uuid : 'User Name'}</Text>
       <Text style={styles.email}>{user ? user.email : 'user@example.com'}</Text>
       <TouchableOpacity style={styles.button} onPress= {signOut}>
         <Text style={styles.buttonText}>Sign Out</Text>
       </TouchableOpacity>
     </View>
-
-    // <View style={styles.container}>
-    //   <Image
-    //     style={styles.avatar}
-    //     source={{ uri: 'https://via.placeholder.com/150' }}/>
-    //   <Text style={styles.name}> User Name</Text>
-    //   <Text style={styles.email}>user@example.com</Text>
-    //   <TouchableOpacity style={styles.button} >
-    //     <Text style={styles.buttonText}>Sign Out</Text>
-    //   </TouchableOpacity>
-    // </View>
   );
 }
 

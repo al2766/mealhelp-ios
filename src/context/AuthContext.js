@@ -1,8 +1,8 @@
 // AuthContext.js
-import React, { createContext, useEffect, useReducer } from 'react';
+import React, { createContext, useEffect, useReducer, useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { auth } from '../firebase/firebaseConfig'; // Adjust the import path as necessary
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPhoneNumber, sendPasswordResetEmail } from "firebase/auth";
 
 
 
@@ -29,6 +29,9 @@ export const AuthProvider = ({ children }) => {
     userToken: null,
   });
 
+  const [loading, setLoading] = useState(false);
+  const [confirm, setConfirm] = useState(null);
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
@@ -39,6 +42,39 @@ export const AuthProvider = ({ children }) => {
     });
     return unsubscribe;
   }, []);
+
+
+  const signInWithPhone = async (phoneNumber) => {
+    setLoading(true);
+    try {
+      const confirmation = await signInWithPhoneNumber(auth, phoneNumber);
+      setConfirm(confirmation);
+      setLoading(false);
+    } catch (error) {
+     
+      setLoading(false);
+      throw error; 
+    }
+  };
+
+const confirmCode = async (verificationCode) => {
+  if (!confirm) {
+    Alert.alert('Error', 'No confirmation code available');
+    return;
+  }
+  setLoading(true);
+  try {
+    await confirm.confirm(verificationCode); // Use the confirmation result to verify the code.
+    // Navigate or update state as needed after successful confirmation
+  } catch (error) { 
+    setLoading(false);
+    throw error; 
+   
+  }
+  
+};
+
+  
 
    const signIn = async (email, password) => {
     try {
@@ -68,10 +104,21 @@ export const AuthProvider = ({ children }) => {
       throw error; // Throw the error to be caught in the component
     }
   };
+
+  const forgotPassword = async (email) => {
+    setLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert('Check your email', 'A link to reset your password has been sent to your email address.');
+    } catch (error) {
+      throw error;
+    }
+    setLoading(false);
+  };
   
 
   return (
-    <AuthContext.Provider value={{ ...state, signIn, signOut, signUp }}>
+    <AuthContext.Provider value={{ ...state, signIn, signOut, signUp, signInWithPhone, confirmCode, forgotPassword, loading }}>
       {children}
     </AuthContext.Provider>
   );
