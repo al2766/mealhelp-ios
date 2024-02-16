@@ -2,6 +2,8 @@ import React, { useState, useContext } from 'react';
 import { Button, View, Text, StyleSheet, TextInput, Alert, TouchableOpacity, Image } from 'react-native';
 import {AuthContext} from '../context/AuthContext';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
+import { AppleButton } from '@invertase/react-native-apple-authentication';
+
 
 
 
@@ -11,6 +13,8 @@ function SignInScreen({navigation}) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const {signIn} = useContext(AuthContext);
+  const { signInWithApple } = useContext(AuthContext);
+
 
 
 
@@ -34,6 +38,24 @@ function SignInScreen({navigation}) {
       setError(customMessage);
     }
   };
+
+
+
+  const handleAppleSignInPress = async () => {
+    try {
+      await signInWithApple();
+      // After sign in, you can navigate to the home screen
+      navigation.navigate('Home');
+    } catch (error) {
+      // Handle sign in errors here
+      console.error(error);
+      setError('Apple Sign-In failed. Please try again.');
+    }
+  };
+
+
+
+
   return (
     <View style={styles.container}>
    
@@ -72,13 +94,22 @@ function SignInScreen({navigation}) {
         <View style={styles.dividerLine} />
       </View>      
       {/* Phone Sign In Button */}
-      <TouchableOpacity style={styles.wideButton} onPress={() => navigation.navigate('PhoneSignIn')}>
+      {/* <TouchableOpacity style={styles.wideButton} onPress={() => navigation.navigate('PhoneSignIn')}>
         <FontAwesome name="mobile" style={styles.iconStyle} />
         <Text style={styles.wideButtonText}>Sign in with phone number</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       {/* Placeholder for Apple Sign In Button */}
-      <TouchableOpacity style={styles.wideButton} onPress={() => {/* Future Apple sign-in implementation */}}>
+
+      {/* <AppleButton
+      
+        buttonStyle={AppleButton.Style.WHITE}
+        buttonType={AppleButton.Type.SIGN_IN}
+        style={styles.wideButton}
+        onPress={() => handleAppleSignInPress()}
+      /> */}
+    
+      <TouchableOpacity style={styles.wideButton} onPress={handleAppleSignInPress}>
         <FontAwesome name="apple" style={styles.iconStyle} />
         <Text style={styles.wideButtonText}>Sign in with Apple</Text>
       </TouchableOpacity>

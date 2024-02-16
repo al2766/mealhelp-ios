@@ -2,7 +2,10 @@
 import React, { createContext, useEffect, useReducer, useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { auth } from '../firebase/firebaseConfig'; // Adjust the import path as necessary
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPhoneNumber, sendPasswordResetEmail } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPhoneNumber, sendPasswordResetEmail, AppleAuthProvider  } from "firebase/auth";
+import { appleAuth } from '@invertase/react-native-apple-authentication';
+
+
 
 
 
@@ -30,7 +33,7 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [confirm, setConfirm] = useState(null);
+  const [confirm, setConfirm] = useState(true);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -42,6 +45,50 @@ export const AuthProvider = ({ children }) => {
     });
     return unsubscribe;
   }, []);
+
+
+
+ 
+
+  const signInWithApple = async () => {
+    console.log('Starting Apple Sign-In process...');
+    setLoading(true);
+    try {
+      console.log('Performing Apple Auth Request...');
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+      });
+  
+      console.log('Apple Auth Request Response:', appleAuthRequestResponse);
+      const { identityToken, nonce } = appleAuthRequestResponse;
+  
+      if (identityToken) {
+        console.log('Got identity token:', identityToken);
+        console.log('Checking auth object:', auth);
+        console.log('Checking AppleAuthProvider:', auth.AppleAuthProvider);
+  
+        const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
+        console.log('Apple Credential:', appleCredential);
+  
+        const userCredential = await auth().signInWithCredential(appleCredential);
+        console.log('User signed in:', userCredential);
+  
+        dispatch({ type: 'SIGN_IN', token: userCredential.user.uid });
+        setLoading(false);
+      } else {
+        setLoading(false);
+        console.error('Apple Sign-In failed - no identity token returned');
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error('Apple Sign-In error:', error);
+      throw error;
+    }
+  };
+  
+  
+  
 
 
   const signInWithPhone = async (phoneNumber) => {
@@ -58,6 +105,7 @@ export const AuthProvider = ({ children }) => {
   };
 
 const confirmCode = async (verificationCode) => {
+  Alert.alert(verificationCode)
   if (!confirm) {
     Alert.alert('Error', 'No confirmation code available');
     return;
@@ -118,7 +166,7 @@ const confirmCode = async (verificationCode) => {
   
 
   return (
-    <AuthContext.Provider value={{ ...state, signIn, signOut, signUp, signInWithPhone, confirmCode, forgotPassword, loading }}>
+    <AuthContext.Provider value={{ ...state, signIn, signOut, signUp, signInWithPhone, confirmCode, forgotPassword, loading, signInWithApple }}>
       {children}
     </AuthContext.Provider>
   );

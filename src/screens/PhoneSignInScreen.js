@@ -5,10 +5,11 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome'
 
 
 
+
 function PhoneSignInScreen({navigation}) {
   const [phoneNumber, setPhoneNumber] = useState('07957196486');
   const [error, setError] = useState('');
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState('123456');
   const { signInWithPhone, confirmCode, loading, confirm } = useContext(AuthContext);
 
   const handleSendCode = async () => {
@@ -78,9 +79,10 @@ function PhoneSignInScreen({navigation}) {
             keyboardType="phone-pad"
             editable={!loading}
           />
+
                      {error ? <Text style={styles.errorMessage}>{error}</Text> : null}
 
-          <TouchableOpacity style={styles.button} onPress={handleSendCode} disabled={loading}>
+          <TouchableOpacity style={styles.button} onPress={handleConfirmCode} disabled={loading}>
   <Text style={styles.buttonText}>{loading ? 'Sending...' : 'Send Code'}</Text>
 </TouchableOpacity>
 
